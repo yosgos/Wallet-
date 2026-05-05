@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -31,7 +32,6 @@
             background: var(--bit-bg);
             color: var(--bit-text-main);
             min-height: 100vh;
-            /* הוספת מרווח גדול בתחתית כדי שהניווט לא יסתיר תוכן */
             padding-bottom: 140px; 
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
@@ -187,7 +187,6 @@
 
             <h3 id="historyTitle" class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 px-1">כל הפעולות</h3>
             <div id="historyList" class="space-y-1"></div>
-            <!-- Spacer to ensure scroll goes past the nav -->
             <div class="h-24"></div>
         </div>
     </div>
@@ -204,8 +203,7 @@
         </button>
     </nav>
 
-    <!-- Modals (Settings, Edit, Confirm) -->
-    <!-- ... קוד המודאלים נשאר זהה לוגית ... -->
+    <!-- Modals -->
     <div id="settingsModal" class="fixed inset-0 modal-overlay hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div class="bit-card w-full max-w-sm rounded-t-[40px] sm:rounded-[40px] p-8 animate__animated animate__slideInUp bg-white/95">
             <h3 class="text-xl font-extrabold mb-6 text-slate-900">הגדרות כיסים</h3>
@@ -255,12 +253,23 @@
     </div>
 
     <script>
-        let transactions = JSON.parse(localStorage.getItem('bit_wallet_tx_light')) || [];
-        let pockets = JSON.parse(localStorage.getItem('bit_wallet_pockets_light')) || [
+        /**
+         * הפרדת זיכרון לאתרים נפרדים באותו דומיין:
+         * פשוט שנה את השם למטה לכל אתר (למשל 'Wallet_2', 'Wallet_Home' וכו')
+         */
+        const WALLET_ID = 'Wallet_1'; 
+
+        // מפתחות ייחודיים ל-LocalStorage
+        const TX_KEY = `bit_tx_${WALLET_ID}`;
+        const POCKETS_KEY = `bit_pockets_${WALLET_ID}`;
+
+        let transactions = JSON.parse(localStorage.getItem(TX_KEY)) || [];
+        let pockets = JSON.parse(localStorage.getItem(POCKETS_KEY)) || [
             { id: 'p1', name: 'עובר ושב', balance: 0, color: '#0ea5e9' },
             { id: 'p2', name: 'חיסכון', balance: 0, color: '#8b5cf6' },
             { id: 'p3', name: 'מזומן', balance: 0, color: '#f59e0b' }
         ];
+        
         let currentType = 'income';
         let editCurrentType = 'income';
         let selectedFilter = null;
@@ -272,8 +281,8 @@
         };
 
         function saveData() {
-            localStorage.setItem('bit_wallet_tx_light', JSON.stringify(transactions));
-            localStorage.setItem('bit_wallet_pockets_light', JSON.stringify(pockets));
+            localStorage.setItem(TX_KEY, JSON.stringify(transactions));
+            localStorage.setItem(POCKETS_KEY, JSON.stringify(pockets));
         }
 
         function switchView(view) {
@@ -511,19 +520,19 @@
                 const swipeWrapper = document.createElement('div');
                 swipeWrapper.className = "swipe-container animate__animated animate__fadeInUp";
                 swipeWrapper.innerHTML = `
-                    <div id="ind-right-${t.id}" class="swipe-action-indicator justify-start">מחיקה</div>
-                    <div id="ind-left-${t.id}" class="swipe-action-indicator justify-end">עריכה</div>
-                    <div id="tx-content-${t.id}" class="swipe-content bit-card p-5 flex justify-between items-center" 
-                         style="color: ${t.pocketColor}" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, ${t.id})" ontouchend="handleTouchEnd(event, ${t.id})">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center bg-white/90 font-bold shadow-sm" style="color: ${actionColor}">${isIncome ? '↑' : '↓'}</div>
-                            <div class="pointer-events-none">
-                                <p class="font-extrabold text-base leading-tight text-slate-900">${t.description}</p>
-                                <p class="text-[10px] font-bold text-slate-700">${t.date} • ${t.pocketName}</p>
+                    <div id=\"ind-right-${t.id}\" class=\"swipe-action-indicator justify-start\">מחיקה</div>
+                    <div id=\"ind-left-${t.id}\" class=\"swipe-action-indicator justify-end\">עריכה</div>
+                    <div id=\"tx-content-${t.id}\" class=\"swipe-content bit-card p-5 flex justify-between items-center\" 
+                         style=\"color: ${t.pocketColor}\" ontouchstart=\"handleTouchStart(event)\" ontouchmove=\"handleTouchMove(event, ${t.id})\" ontouchend=\"handleTouchEnd(event, ${t.id})\">
+                        <div class=\"flex items-center gap-4\">
+                            <div class=\"w-10 h-10 rounded-2xl flex items-center justify-center bg-white/90 font-bold shadow-sm\" style=\"color: ${actionColor}\">${isIncome ? '↑' : '↓'}</div>
+                            <div class=\"pointer-events-none\">
+                                <p class=\"font-extrabold text-base leading-tight text-slate-900\">${t.description}</p>
+                                <p class=\"text-[10px] font-bold text-slate-700\">${t.date} • ${t.pocketName}</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4 pointer-events-none">
-                            <p class="font-black text-lg" style="color: ${actionColor}">${isIncome ? '+' : '-'}${t.amount.toLocaleString()} ₪</p>
+                        <div class=\"flex items-center gap-4 pointer-events-none\">
+                            <p class=\"font-black text-lg\" style=\"color: ${actionColor}\">${isIncome ? '+' : '-'}${t.amount.toLocaleString()} ₪</p>
                         </div>
                     </div>
                 `;
@@ -533,3 +542,5 @@
     </script>
 </body>
 </html>
+
+```
